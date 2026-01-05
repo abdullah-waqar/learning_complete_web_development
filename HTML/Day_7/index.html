@@ -1,0 +1,72 @@
+<!-- Forms -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="">
+
+        <label for="name">Name: </label>
+        <input id="name" type="text" name="username" value="Tom"> <!-- On the server this field name will be username it must be a unique  -->
+<!-- On the server it will be like username: Tom..... name and value will be like a key value pair -->
+        <br><br>
+        
+        <label for="age">Age: </label>
+        <input id="age" type="number" name="userage">
+        
+        <br><br>
+        
+        <button>Submit</button>
+    </form>
+
+
+    <h1>Contact Us</h1>
+
+    <form action="">
+
+        <label for="fullname">Full Name:</label>
+        <input type="text" id="fullname" name="username" value="Tom">
+        <br><br>
+
+        <label for="email">Email: </label>
+        <input type="email" name="useremail" id="email" value="tom@gmail.com">
+        <br><br>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="userphone" value="03163425443">
+        <br><br>
+
+        <label for="message">Message:</label>
+        <textarea name="usermessage" id="message" cols="50" rows="10" ></textarea>
+        <br><br>
+
+        <button>Send</button>
+    </form>
+
+
+    <h2>User Registration</h2>
+
+    <form action="">
+        <label for="name">Username:</label>
+        <input type="text" id="name" name="username" placeholder="Enter your name">
+        <br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="useremail" placeholder="tom@gmail.com">
+        <br><br>
+
+        <label>Gender</label>
+        
+        <input type="radio" id="male" name="gender">
+        <label for="male">Male</label>
+
+        <input type="radio" id="female" name="gender">
+        <label for="female">Female</label>
+        
+
+    </form>
+</body>
+</html>
