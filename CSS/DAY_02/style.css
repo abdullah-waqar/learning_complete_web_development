@@ -1,0 +1,28 @@
+/* paragraph and h1 to h6, i cannot assume the block element as a child */
+
+p > div {
+    color: red;
+}
+/* but on div, section i can put block elements */
+div > p {
+    color: green;
+}
+
+h1{
+    /* Change by rgb color */
+    color: rgb(100, 103, 82);
+}
+
+h2{
+    /* Change color by hexadecimal put # first and then fill any 6 digits from 0 to f */
+    color: #b63fe9;
+}
+
+ul li{
+    /* change by hsl hue, staturation, and lighting */
+
+    color: hsl(253, 86%, 37%);
+    background-color: antiquewhite;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 40px;
+}
