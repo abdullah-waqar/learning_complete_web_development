@@ -1,0 +1,21 @@
+h1 {
+    /* 10 percent of the width that is visible on the screen */
+    
+    font-size: 10vw;
+    /* Values are between 100 to 900 */
+    font-weight: 300;
+
+    font-style: italic;
+
+    font-variant: small-caps;
+}
+
+p {
+    font-family: 'Roboto Condensed';
+    line-height: 30px;
+    letter-spacing: 3px;
+    word-spacing: 10px;
+    text-transform: capitalize;
+    
+    
+}
