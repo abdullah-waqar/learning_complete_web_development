@@ -1,0 +1,26 @@
+h1 {
+    background-color: red;
+    border: 2px solid blue;
+    margin-bottom: 50px;
+    height: 100px;
+}
+
+#span_1 {
+    display: block;
+    background-color: pink;
+    margin-bottom: 10px;
+    padding: 10px;
+    
+
+}
+
+#span_2 {
+    background-color: lightcoral;
+}
+
+#span_3 {
+    background-color: yellow;
+    display: inline-block;
+    width: 200px;
+    
+}

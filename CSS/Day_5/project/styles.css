@@ -1,0 +1,26 @@
+#flag {
+
+    width: 200px;
+    height: 182px;
+    border: 1px solid black;
+}
+
+.red {
+    background-color: red;
+    width: 70px;
+    height: 80px;
+    display: inline-block;
+}
+
+.redbig {
+    background-color: red;
+    width: 112px;
+    height: 80px;
+    display: inline-block;
+}
+
+.white {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+}
