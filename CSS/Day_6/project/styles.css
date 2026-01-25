@@ -1,0 +1,61 @@
+* {
+    margin: 0;
+}
+
+.container1{
+    background-color: pink;
+    width: 100vw;
+    height: 100vh;
+    position: sticky;
+    top: 10px;
+    
+}
+
+
+img {
+    object-fit: cover;
+}
+
+.heading1 {
+    position: absolute;
+    font-size: 100px;
+    top: 10px;
+    left: 150px;
+    
+  
+}
+
+.heading2 {
+    position: absolute;
+    font-size: 100px;
+    top: 10px;
+    left: 150px;
+    color: pink;
+    
+  
+}
+
+.heading3 {
+    position: absolute;
+    font-size: 100px;
+    top: 10px;
+    left: 150px;
+    color: cadetblue;
+    
+  
+}
+.container2 {
+    background-color: blanchedalmond;
+    width: 100vw;
+    height: 100vh;
+    position: sticky;
+    top: 10px;
+}
+
+.container3 {
+    background-color: palevioletred;
+    width: 100vw;
+    height: 100vh;
+    position: sticky;
+    top: 10px;
+}

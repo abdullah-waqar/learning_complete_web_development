@@ -1,0 +1,9 @@
+div {
+    height: 200px;
+    width: 100vw;
+    background-color: pink;
+    /* By default overflow is visible */
+    overflow: scroll;
+}
+
+/* WE can use hidden to hide the overflow */
