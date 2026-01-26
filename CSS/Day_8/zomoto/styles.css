@@ -1,0 +1,149 @@
+*{
+    margin: 0;
+}
+
+body {
+    background-color: rgb(246, 239, 239);
+}
+.card {
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    padding: 10px;
+   
+}
+
+.box {
+    display: inline-block;
+}
+
+.img{
+    height: 200px;
+    width: auto;
+    border-radius: 20px;
+    z-index: 1;
+}
+
+.restaurant, .food, .location{
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.restaurant_name {
+    font-size: 20px;
+    font-weight: bold;
+}   
+
+.rating{
+    background-color: green;
+    padding: 5px;
+    position: absolute;
+    right: 5px;
+    color: white;
+    border-radius: 3px;
+}
+
+
+.price, .distance {
+    position: absolute;
+    right: 0;
+}
+
+.food, .place {
+    font-size: 15px;
+    color: rgb(81, 78, 78);
+}
+
+.distance {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.card:hover {
+    background-color: white;
+    border-radius: 10px;
+}
+
+.image {
+    position: relative;
+}
+.off {
+    position: absolute;
+    bottom: 10px;
+    left: 5px;
+    font-size: 20px;
+
+    background-color: rgba(0, 0, 255, 0.4);
+    color: white;
+}
+
+
+
+.inline-block {
+    display: inline-block;
+}
+
+.location-search-section{
+    background-color: white;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border: 1px solid white;
+    border-radius: 6px;
+    color: grey;
+    cursor: pointer;
+    margin-left: 30px;
+}
+
+
+
+.bar {
+    color: grey;
+}
+
+.logo {
+    padding-top: 16px;
+    cursor: pointer;
+    font-size: 44px;
+    
+    
+}
+
+button {
+    margin-left: 30px;
+    border: none;
+    background-color: rgb(246, 239, 239);
+    color: grey;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+header {
+    margin: 20px;
+    margin-left: 40px;
+}
+
+.location-icon-color {
+    color: pink;
+    font-size: 20px;
+}
+
+
+.middle-section {
+    color: grey;
+    font-size: 12px;
+    margin-top: 25px;
+}
+
+h2 {
+    margin-left: 40px;
+    font-size: 30px;
+    color: rgb(93, 81, 81);
+}
+
+button:hover{
+    color: black;
+}
