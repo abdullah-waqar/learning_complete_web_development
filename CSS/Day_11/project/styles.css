@@ -1,0 +1,128 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.logo {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(238, 61, 61);
+    padding: 2rem;
+}
+
+.right button {
+    font-size: 1.1rem;
+    margin: 0.4rem;
+    color: white;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding-top: 0.2rem;
+}
+
+.search {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    background-color: rgb(208, 205, 205);
+}
+
+.searching {
+    width: 20rem;
+    padding: 10px; 
+    border-radius: 10px;
+}
+
+.search > button {
+    font-size: 1rem;
+    margin-left: 0.3rem;
+    padding: 10px;
+    border-radius: 15px;
+    background-color: rgb(238, 61, 61);
+    border-color: rgb(238, 61, 61);
+}
+
+
+.hero {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background-image: url("https://plus.unsplash.com/premium_photo-1720004021036-44ff682b69b0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8c3BsYXNofGVufDB8fDB8fHww");
+    background-size: cover;
+    height: 10rem;
+}
+
+.hero > h2 {
+    color: black;
+    font-weight: 800;
+    font-size: 2rem;
+}
+
+.hero > button {
+    background-color: rgb(238, 61, 61);
+    border-radius: 10px;
+    padding: 6px;
+    font-size: 1rem;
+    border-color: rgb(238, 61, 61);
+    cursor: pointer;
+    margin-top: 10px;
+
+}
+
+
+.mover {
+    padding: 1rem;
+    
+
+}
+
+.mover > h2 {
+        text-align: center;
+    
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.images {
+    height: 200px;
+    width: 200px;
+}
+
+.card {
+    width: 200px;
+    bottom: 0.5rem solid grey;
+    padding: .5rem;
+    border-radius: 10px;
+    
+}
+.card > h3 {
+    text-align: center;
+}
+
+
+.movie {
+    display: flex;
+    padding: .5rem;
+    height: 300px;
+    max-width: 100vw;
+    overflow-x: scroll;
+    
+}
+
+
+@media (max-width: 550px) {
+    .logo{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+    .right {
+        display: flex;
+        flex-direction: column;
+    }
+    .hero > h2 {
+        font-size: 1.6rem;
+    }
+}

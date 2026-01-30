@@ -1,0 +1,29 @@
+.container
+{
+    /* width: 400px;
+    height: 200px; */
+    background-color: blue;
+    display: flex;
+}
+
+
+/* @media (max-width: 500px) {
+    .container {
+        background-color: yellow;
+    }
+} */
+
+.box {
+    height: 100px;
+    width: 100px;
+    color: white;
+    background-color: pink;
+    margin: 30px;
+}
+
+@media (max-width: 500px)
+{
+    .container {
+    flex-direction: column;
+    }
+}
