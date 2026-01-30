@@ -1,0 +1,11 @@
+.contianer {
+    width: 100px;
+    height: 100px;
+    background: black;
+}
+
+@media (max-width: 400px) {
+        .contianer {
+            background-color: yellow;
+        }
+}
