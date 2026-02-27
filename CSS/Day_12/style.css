@@ -1,0 +1,66 @@
+h1{
+    color: green;
+    text-align: justify;
+    background-color: aqua;
+    text-align-last: center;
+    
+    
+}
+
+/* Text align: center, left, right, and justify */
+
+/* text-align-last: this changes the orientation of last line */
+
+h2{
+    /* Forces text to flip direction regardless of language */
+    direction: rtl;
+    unicode-bidi: bidi-override;
+}
+
+p {
+    text-decoration: overline underline red 4px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    word-spacing: 10px;
+    line-height: 30px;
+    
+}
+
+.container {
+    width: 400px;
+    height: 400px;
+    background-color: red;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.box {
+    height: 200px;
+    width: 200px;
+    background-color: pink;
+    box-shadow: 0px 0px 20px 5px pink;
+    border-radius: 50%;
+    transition-property: background-color, box-shadow, width, height;
+    transition-duration: 1s;
+    transition-timing-function: ease;
+    
+}
+
+
+.box:hover {
+    background-color: yellow;
+    box-shadow: 0px 0px 20px 5px orange;
+    width: 100px;
+    height: 300px;
+    
+}
+
+.text {
+    text-shadow:
+  1px 1px 2px red,
+  0 0 1em blue,
+  0 0 0.2em blue;
+}
