@@ -1,0 +1,52 @@
+*
+{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container
+{
+    background-color: wheat;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.box
+{
+    background-color: rgb(8, 187, 8);
+    border: 1px solid black;
+}
+
+.sidebar
+{
+    grid-row-start: 1;
+    grid-row-end: 4;
+}
+
+.header
+{
+    grid-column-start: 2;
+    grid-column-end: 4;
+}
+
+.ads
+{
+
+    grid-row: span 2;
+    
+}
+
+.red
+{
+    background-color: red;
+}
+
+.orange
+{
+    background-color: orange;
+}

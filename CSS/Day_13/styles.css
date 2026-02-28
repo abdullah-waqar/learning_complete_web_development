@@ -1,0 +1,55 @@
+*
+{
+   margin: 0px;
+   padding: 0;
+   box-sizing: 0px; 
+}
+
+body
+{
+    width: 100vw;
+    height: 100vh;
+    background-color: aliceblue;
+   
+    
+}
+
+.container 
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 100px 100px;
+    gap: 10px;
+   
+}
+
+.box
+{
+    background-color: orange;
+    border: 1px solid black;
+}
+
+.header, .footer
+{
+    grid-column-start:1;
+    grid-column-end: 4;
+    text-align: center;
+    
+}
+
+.sidebar
+{
+    grid-row-start: 2;
+    grid-row-end: 4;
+}
+
+.content3 
+{
+    grid-column-start: 2;
+    grid-column-end: 4;
+    height: 100px;
+}
+.footer
+{
+    height: 100px;
+}
