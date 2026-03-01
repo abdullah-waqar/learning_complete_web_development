@@ -1,0 +1,46 @@
+*
+{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body
+{
+    height: 100vh;
+    width: 100vw;
+}
+
+.container
+{
+    background-color: wheat;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.box
+{
+    height: 100px;
+    width: 100px;
+    background-color: pink;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: solid 5px black;
+    font-weight: bolder;
+    font-size: 1.5rem;
+    
+    transition-property: all;
+    transition-delay: 100ms;
+    transition-duration: 1s;
+}
+
+.box:hover
+{
+    
+    transform: translate(-200px, -150px);
+    transform: scale(2);
+}
