@@ -51,3 +51,15 @@ console.log(Number("100x"))
 console.log(Number(null))
 
 console.log(Number(undefined)) // Returns NaN
+
+
+// Increment and decrement Operators
+
+let sum = 10
+let total_sum = sum++;
+
+console.log(`Total Sum: ${total_sum} \nSum: ${sum} `)
+
+total_sum = ++sum
+
+console.log(`Total Sum: ${total_sum} \nSum: ${sum} `)
