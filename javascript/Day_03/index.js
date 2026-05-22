@@ -30,7 +30,7 @@ let fun = function()
 }
 
 fun()
-console.log(typeof fun)
+console.log("Type of function: ", typeof fun)
 
 // Type conversion
 
