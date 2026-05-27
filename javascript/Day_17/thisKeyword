@@ -1,0 +1,100 @@
+/**
+ * ========================================
+ *    JavaScript 'this' Keyword Guide
+ * ========================================
+ */
+
+/**
+ * CONTEXT: What does 'this' refer to?
+ * 
+ * 1. GLOBAL / ALONE
+ *    └─ 'this' refers to: window (in browsers)
+ *    └─ Example: this.property
+ * 
+ * 2. REGULAR FUNCTION
+ *    └─ 'this' refers to: window (in browsers)
+ *    └─ Example: function myFunc() { console.log(this); }
+ * 
+ * 3. FUNCTION (STRICT MODE)
+ *    └─ 'this' refers to: undefined
+ *    └─ Example: 'use strict'; function myFunc() { console.log(this); }
+ * 
+ * 4. OBJECT METHOD
+ *    └─ 'this' refers to: The object before the dot
+ *    └─ Example: obj.method() → 'this' is 'obj'
+ * 
+ * 5. DOM EVENT LISTENER
+ *    └─ 'this' refers to: The HTML element that triggered the event
+ *    └─ Example: element.addEventListener('click', function() { console.log(this); })
+ * 
+ * 6. EXPLICIT BINDING (call/apply/bind)
+ *    └─ 'this' refers to: The object explicitly passed into the method
+ *    └─ Example: func.call(obj) → 'this' is 'obj'
+ *                func.apply(obj, args) → 'this' is 'obj'
+ *                func.bind(obj) → 'this' is 'obj'
+ */
+
+// ========================================
+// PRACTICAL EXAMPLES
+// ========================================
+
+// Example 1: Global Context
+console.log(this); // window (in browser)
+
+// Example 2: Regular Function
+function regularFunc() {
+  console.log(this); // window (in browser)
+}
+regularFunc();
+
+// Example 3: Strict Mode
+'use strict';
+function strictFunc() {
+  console.log(this); // undefined
+}
+strictFunc();
+
+// Example 4: Object Method
+const person = {
+  name: 'John',
+  greet: function() {
+    console.log(this.name); // 'John' - 'this' refers to 'person'
+  }
+};
+person.greet();
+
+// Example 5: DOM Event Listener
+// document.getElementById('btn').addEventListener('click', function() {
+//   console.log(this); // The button element that was clicked
+// });
+
+// Example 6: Explicit Binding (call)
+const user = { name: 'Alice' };
+function introduce() {
+  console.log('Hello, ' + this.name);
+}
+introduce.call(user); // 'Hello, Alice'
+
+// Example 7: Explicit Binding (apply)
+const numbers = [5, 10, 15];
+const max = Math.max.apply(null, numbers); // 15
+
+// Example 8: Explicit Binding (bind)
+const greet = function() {
+  console.log('Hi, ' + this.name);
+};
+const boundGreet = greet.bind(user);
+boundGreet(); // 'Hi, Alice'
+
+// Example 9: Arrow Functions (don't have their own 'this')
+const obj = {
+  name: 'Sara',
+  regularMethod: function() {
+    console.log(this.name); // 'Sara'
+  },
+  arrowMethod: () => {
+    console.log(this); // Global object (or window), NOT obj
+  }
+};
+obj.regularMethod();
+obj.arrowMethod();
