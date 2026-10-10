@@ -1,0 +1,26 @@
+.flex
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.border {
+    border: 1px solid black;
+}
+
+.margin{
+    margin: 5px;
+}
+
+.lightTheme
+{
+    background-color: white;
+    color: black;
+}
+
+.darkTheme
+{
+    background-color: black;
+    color: white;
+}

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SAWIE Land Classifier — Complete API Reference</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; margin: 45px; color: #1a202c; line-height: 1.55; font-size: 14px; }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  h2 { font-size: 20px; border-bottom: 3px solid #2f855a; padding-bottom: 6px; margin-top: 34px; }
+  h3 { font-size: 15px; margin-top: 26px; margin-bottom: 6px; }
+  h4 { font-size: 13px; margin: 12px 0 4px 0; color: #4a5568; text-transform: uppercase; letter-spacing: 0.5px; }
+  pre { background: #f4f6f8; border: 1px solid #dfe3e8; border-radius: 6px; padding: 12px; font-size: 12px; overflow-x: auto; font-family: Consolas, monospace; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; margin: 10px 0; }
+  th, td { border: 1px solid #cbd5e0; padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { background: #edf2f7; }
+  .get { color: #2b6cb0; font-weight: 700; }
+  .post { color: #2f855a; font-weight: 700; }
+  .put { color: #b7791f; font-weight: 700; }
+  .delete { color: #c53030; font-weight: 700; }
+  .category { page-break-before: always; }
+  .note { background: #fffaf0; border-left: 4px solid #ed8936; padding: 8px 12px; font-size: 13px; margin: 10px 0; }
+  .auth { background: #ebf8ff; border-left: 4px solid #3182ce; padding: 8px 12px; font-size: 13px; margin: 10px 0; }
+  code { background: #edf2f7; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: Consolas, monospace; }
+  .subtitle { color: #4a5568; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<h1>SAWIE Land Classifier — Complete API Reference</h1>
+
+
+<h2>0. General Information</h2>
+
+<h4>Base URL</h4>
+<pre>Production / configured frontend client:
+http://178.63.82.38:8001/api
+
+Local development (default Uvicorn port):
+http://127.0.0.1:8000/api
+
+Interactive Swagger documentation:
+http://&lt;host&gt;:&lt;port&gt;/docs</pre>
+
+<h4>Authentication Header</h4>
+<p>Endpoints marked <strong>Auth</strong> require a JWT bearer token obtained from <code>POST /api/auth/token</code>. The frontend attaches it automatically:</p>
+<pre>Authorization: Bearer &lt;access_token&gt;</pre>
+
+<h4>Common HTTP Status Codes</h4>
+<table>
+<tr><th>Code</th><th>Meaning in this API</th></tr>
+<tr><td>200</td><td>Success (read / update / delete)</td></tr>
+<tr><td>201</td><td>Created (successful POST creation)</td></tr>
+<tr><td>400</td><td>Bad request — invalid GeoJSON, duplicate key, wrong role value</td></tr>
+<tr><td>401</td><td>Missing, expired, or invalid JWT token</td></tr>
+<tr><td>403</td><td>Authenticated but not admin / deactivated account</td></tr>
+<tr><td>404</td><td>Field, scene, class, or label not found</td></tr>
+</table>
+
+<div class="note"><strong>Geometry convention:</strong> All GeoJSON in this API uses <code>[longitude, latitude]</code> order and is stored in PostGIS as <code>SRID 4326</code> (WGS84).</div>
+
+<!-- ================= AUTH ================= -->
+<div class="category">
+<h2>1. Category: Authentication (<code>/api/auth</code>)</h2>
+<p>Manages users (labelers/admins) and JWT login tokens.</p>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+<tr><td class="post">POST</td><td>/api/auth/token</td><td>No</td><td>Login, returns JWT</td></tr>
+<tr><td class="post">POST</td><td>/api/auth/register</td><td>Admin</td><td>Create a new user</td></tr>
+</table>
+
+<h3><span class="post">POST</span> /api/auth/token</h3>
+<p><strong>Purpose:</strong> Login. Validates email + password (bcrypt) and returns a JWT access token plus the user profile.</p>
+<p><strong>Input type:</strong> <code>application/x-www-form-urlencoded</code> (NOT JSON — OAuth2 password form).</p>
+<h4>Sample Input</h4>
+<pre>username=admin@sawie.pk
+password=SuperSecret123</pre>
+<h4>Sample Output (200)</h4>
+<pre>{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIi...",
+  "token_type": "bearer",
+  "labeler": {
+    "labeler_id": 1,
+    "name": "Admin User",
+    "email": "admin@sawie.pk",
+    "role": "admin",
+    "is_active": true
+  }
+}</pre>
+<h4>Errors</h4>
+<pre>400  { "detail": "Incorrect email or password" }
+403  { "detail": "This account has been deactivated." }</pre>
+
+<h3><span class="post">POST</span> /api/auth/register</h3>
+<p><strong>Purpose:</strong> Create a new labeler or admin. Requires an admin token.</p>
+<h4>Sample Input (JSON)</h4>
+<pre>{
+  "name": "New Labeler",
+  "email": "labeler2@sawie.pk",
+  "password": "StrongPass123",
+  "role": "labeler"
+}</pre>
+<h4>Sample Output (201)</h4>
+<pre>{
+  "labeler_id": 6,
+  "name": "New Labeler",
+  "email": "labeler2@sawie.pk",
+  "role": "labeler",
+  "is_active": true
+}</pre>
+<h4>Errors</h4>
+<pre>400  { "detail": "Email is already registered." }
+400  { "detail": "role must be 'labeler' or 'admin'." }
+401  { "detail": "Could not validate credentials" }
+403  { "detail": "This action requires admin privileges." }</pre>
+</div>
+
+<!-- ================= CLASSES ================= -->
+<div class="category">
+<h2>2. Category: Land Cover Classes (<code>/api/classes</code>)</h2>
+<p>Manages the annotation taxonomy (crop, trees, structures, bare soil, uncertain...). Used to build the labeling palette.</p>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+<tr><td class="get">GET</td><td>/api/classes/</td><td>No</td><td>List all classes</td></tr>
+<tr><td class="post">POST</td><td>/api/classes/</td><td>Admin</td><td>Create class</td></tr>
+<tr><td class="put">PUT</td><td>/api/classes/{class_id}</td><td>Admin</td><td>Update class</td></tr>
+<tr><td class="delete">DELETE</td><td>/api/classes/{class_id}</td><td>Admin</td><td>Delete class</td></tr>
+<tr><td class="post">POST</td><td>/api/classes/seed</td><td>Admin</td><td>Seed the 5 default classes</td></tr>
+</table>
+
+<h3><span class="get">GET</span> /api/classes/</h3>
+<p><strong>Input:</strong> None.</p>
+<h4>Sample Output (200)</h4>
+<pre>[
+  {
+    "class_id": 1,
+    "class_key": "crop",
+    "display_name": "Cultivated Crop",
+    "hex_color": "#e6c619",
+    "is_trainable": true,
+    "notes": null
+  },
+  {
+    "class_id": 2,
+    "class_key": "trees_orchard",
+    "display_name": "Trees / Orchard",
+    "hex_color": "#1f7a3d",
+    "is_trainable": true,
+    "notes": null
+  }
+]</pre>
+
+<h3><span class="post">POST</span> /api/classes/</h3>
+<h4>Sample Input</h4>
+<pre>{
+  "class_key": "water",
+  "display_name": "Water Body",
+  "hex_color": "#00bfff",
+  "is_trainable": true,
+  "notes": null
+}</pre>
+<h4>Sample Output (201)</h4>
+<pre>{
+  "class_id": 6,
+  "class_key": "water",
+  "display_name": "Water Body",
+  "hex_color": "#00bfff",
+  "is_trainable": true,
+  "notes": null
+}</pre>
+<h4>Errors</h4>
+<pre>400  { "detail": "Class key 'water' already exists." }</pre>
+
+<h3><span class="put">PUT</span> /api/classes/{class_id}</h3>
+<p><strong>Input:</strong> Any subset of fields (partial update).</p>
+<h4>Sample Input</h4>
+<pre>{
+  "display_name": "Water / Pond",
+  "hex_color": "#0099cc"
+}</pre>
+<h4>Sample Output (200)</h4>
+<pre>{
+  "class_id": 6,
+  "class_key": "water",
+  "display_name": "Water / Pond",
+  "hex_color": "#0099cc",
+  "is_trainable": true,
+  "notes": null
+}</pre>
+<h4>Errors</h4>
+<pre>404  { "detail": "Land cover class not found." }
+400  { "detail": "Class key '...' already exists." }</pre>
+
+<h3><span class="delete">DELETE</span> /api/classes/{class_id}</h3>
+<p><strong>Input:</strong> Path parameter only, e.g. <code>/api/classes/6</code></p>
+<h4>Sample Output (200)</h4>
+<pre>{ "message": "Land cover class deleted successfully" }</pre>
+
+<h3><span class="post">POST</span> /api/classes/seed</h3>
+<p><strong>Input:</strong> None. Creates the 5 project defaults if missing (crop, trees_orchard, structures_roads, bare_fallow_soil, uncertain).</p>
+<h4>Sample Output (200)</h4>
+<pre>[
+  { "class_id": 1, "class_key": "crop",             "display_name": "Cultivated Crop",                  "hex_color": "#e6c619", "is_trainable": true,  "notes": null },
+  { "class_id": 2, "class_key": "trees_orchard",    "display_name": "Trees / Orchard",                  "hex_color": "#1f7a3d", "is_trainable": true,  "notes": null },
+  { "class_id": 3, "class_key": "structures_roads", "display_name": "Buildings / Roads / Structures",   "hex_color": "#e8492c", "is_trainable": true,  "notes": null },
+  { "class_id": 4, "class_key": "bare_fallow_soil", "display_name": "Bare / Fallow Soil",               "hex_color": "#a0722f", "is_trainable": true,  "notes": null },
+  { "class_id": 5, "class_key": "uncertain",        "display_name": "Uncertain / Ambiguous",            "hex_color": "#7a7a7a", "is_trainable": false, "notes": null }
+]</pre>
+</div>
+
+<!-- ================= FIELDS ================= -->
+<div class="category">
+<h2>3. Category: Agricultural Fields (<code>/api/fields</code>)</h2>
+<p>Creates and reads farmers, fields, and field boundary polygons (PostGIS <code>POLYGON, SRID 4326</code>).</p>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+<tr><td class="post">POST</td><td>/api/fields/</td><td>Yes</td><td>Create farmer + field + polygon</td></tr>
+<tr><td class="get">GET</td><td>/api/fields/</td><td>No</td><td>List all fields (dropdown)</td></tr>
+<tr><td class="get">GET</td><td>/api/fields/{field_id}</td><td>No</td><td>Get one field + boundary</td></tr>
+<tr><td class="get">GET</td><td>/api/fields/geojson</td><td>No</td><td>All boundaries as FeatureCollection</td></tr>
+</table>
+
+<h3><span class="post">POST</span> /api/fields/</h3>
+<p><strong>Purpose:</strong> Find-or-create the Farmer, create the Field, and store the boundary as an active <code>FieldPolygonVersion</code> (source = "Web Upload").</p>
+<h4>Sample Input</h4>
+<pre>{
+  "field_name": "North Block Sector A",
+  "farmer_name": "Muhammad Ali",
+  "boundary_geom": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [72.0000, 31.0000],
+        [72.0100, 31.0000],
+        [72.0100, 31.0100],
+        [72.0000, 31.0100],
+        [72.0000, 31.0000]
+      ]
+    ]
+  },
+  "farmer_code": "Sawie-1001"
+}</pre>
+<p><code>farmer_code</code> is optional. If omitted and the farmer is new, a <code>WEBCREATED-&lt;timestamp&gt;</code> code is generated.</p>
+<h4>Sample Output (201)</h4>
+<pre>{
+  "field_id": 25,
+  "field_name": "North Block Sector A",
+  "farmer_name": "Muhammad Ali",
+  "boundary_geom": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [72.0000, 31.0000],
+        [72.0100, 31.0000],
+        [72.0100, 31.0100],
+        [72.0000, 31.0100],
+        [72.0000, 31.0000]
+      ]
+    ]
+  }
+}</pre>
+<h4>Errors</h4>
+<pre>400  { "detail": "Invalid GeoJSON geometry." }
+400  { "detail": "Geometry parsing error: ..." }</pre>
+
+<h3><span class="get">GET</span> /api/fields/</h3>
+<p><strong>Input:</strong> None.</p>
+<h4>Sample Output (200)</h4>
+<pre>[
+  {
+    "field_id": 25,
+    "field_name": "North Block Sector A",
+    "farmer_name": "Muhammad Ali",
+    "boundary_geom": { "type": "Polygon", "coordinates": [ ... ] }
+  },
+  {
+    "field_id": 26,
+    "field_name": "South Block",
+    "farmer_name": "Unknown",
+    "boundary_geom": {}
+  }
+]</pre>
+
+<h3><span class="get">GET</span> /api/fields/{field_id}</h3>
+<p><strong>Input:</strong> Path parameter, e.g. <code>/api/fields/25</code></p>
+<h4>Sample Output (200)</h4>
+<pre>{
+  "field_id": 25,
+  "field_name": "North Block Sector A",
+  "farmer_name": "Muhammad Ali",
+  "boundary_geom": { "type": "Polygon", "coordinates": [ ... ] }
+}</pre>
+<h4>Errors</h4>
+<pre>404  { "detail": "Field not found" }</pre>
+
+<h3><span class="get">GET</span> /api/fields/geojson</h3>
+<p><strong>Input:</strong> None. Returns every active boundary as a standard GeoJSON FeatureCollection for map libraries.</p>
+<h4>Sample Output (200)</h4>
+<pre>{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Polygon", "coordinates": [ ... ] },
+      "properties": {
+        "field_id": 25,
+        "field_name": "North Block Sector A",
+        "farmer_name": "Muhammad Ali",
+        "crop_type": "General"
+      }
+    }
+  ]
+}</pre>
+</div>
+
+<!-- ================= IMAGERY ================= -->
+<div class="category">
+<h2>4. Category: Imagery Management (<code>/api/imagery</code>)</h2>
+<p>Manual scene entry (legacy) plus the real Google Earth Engine / Sentinel-2 integration: best-scene selection, native CRS, true-color thumbnail, and the real 10 m pixel grid.</p>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+<tr><td class="post">POST</td><td>/api/imagery/</td><td>Yes</td><td>Manual scene entry (legacy)</td></tr>
+<tr><td class="get">GET</td><td>/api/imagery/field/{field_id}</td><td>No</td><td>List scenes of a field</td></tr>
+<tr><td class="get">GET</td><td>/api/imagery/field/{field_id}/scene</td><td>No</td><td>Best Sentinel-2 scene via Earth Engine</td></tr>
+<tr><td class="get">GET</td><td>/api/imagery/field/{field_id}/pixel-grid</td><td>No</td><td>Real Sentinel-2 pixel centers</td></tr>
+</table>
+
+<h3><span class="post">POST</span> /api/imagery/</h3>
+<p><strong>Purpose:</strong> Manually attach an imagery scene to a field (backward-compatible workflow).</p>
+<h4>Sample Input</h4>
+<pre>{
+  "field_id": 25,
+  "capture_date": "2025-06-15",
+  "cloud_cover_pct": 1.5,
+  "image_url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+}</pre>
+<h4>Sample Output (201)</h4>
+<pre>{
+  "scene_id": 42,
+  "field_id": 25,
+  "capture_date": "2025-06-15",
+  "cloud_cover_pct": 1.5,
+  "image_url": "https://server.arcgisonline.com/.../{z}/{y}/{x}"
+}</pre>
+<h4>Errors</h4>
+<pre>404  { "detail": "Field not found." }</pre>
+
+<h3><span class="get">GET</span> /api/imagery/field/{field_id}</h3>
+<p><strong>Input:</strong> Path parameter, e.g. <code>/api/imagery/field/25</code></p>
+<h4>Sample Output (200)</h4>
+<pre>[
+  {
+    "scene_id": 42,
+    "field_id": 25,
+    "capture_date": "2025-06-15",
+    "cloud_cover_pct": 1.5,
+    "image_url": "https://earthengine.googleapis.com/v1/.../thumbnail"
+  }
+]</pre>
+
+<h3><span class="get">GET</span> /api/imagery/field/{field_id}/scene</h3>
+<p><strong>Purpose:</strong> Sends the field's active polygon to Earth Engine, searches <code>COPERNICUS/S2_SR_HARMONIZED</code> (2024-01-01 → 2026-12-31, cloud &lt; 20%), picks the least-cloudy image, computes the native UTM CRS and a true-color thumbnail URL, and get-or-creates the <code>ImageryScene</code> row.</p>
+<h4>Sample Input</h4>
+<pre>None — path parameter only: /api/imagery/field/25/scene</pre>
+<h4>Sample Output (200)</h4>
+<pre>{
+  "field_id": 25,
+  "scene_date": "2025-06-15",
+  "cloud_pct": 1.23,
+  "native_crs": "EPSG:32643",
+  "thumb_url": "https://earthengine.googleapis.com/v1/projects/357562258612/.../thumbnail?...",
+  "scene_id": 42
+}</pre>
+<h4>Errors</h4>
+<pre>404  { "detail": "Field not found." }
+404  { "detail": "No active polygon boundary for this field." }</pre>
+
+<h3><span class="get">GET</span> /api/imagery/field/{field_id}/pixel-grid</h3>
+<p><strong>Purpose:</strong> Returns the REAL Sentinel-2 pixel centers inside the field, computed with <code>ee.Image.pixelLonLat()</code> + batched <code>reduceRegion()</code> at native CRS and 10 m scale. Result is cached in <code>ImageryScene.pixel_grid_cache</code>.</p>
+<h4>Sample Input</h4>
+<pre>None — path parameter only: /api/imagery/field/25/pixel-grid</pre>
+<h4>Sample Output (200)</h4>
+<pre>{
+  "field_id": 25,
+  "native_crs": "EPSG:32643",
+  "scene_date": "2025-06-15",
+  "scene_id": 42,
+  "pixel_count": 3,
+  "pixels": [
+    { "pixel_id": 0, "lng": 72.00005, "lat": 31.00005 },
+    { "pixel_id": 1, "lng": 72.00015, "lat": 31.00005 },
+    { "pixel_id": 2, "lng": 72.00005, "lat": 31.00015 }
+  ]
+}</pre>
+<h4>Errors</h4>
+<pre>404  { "detail": "Field not found." }
+404  { "detail": "No active polygon boundary for this field." }</pre>
+</div>
+
+<!-- ================= LABELS ================= -->
+<div class="category">
+<h2>5. Category: Pixel-Level Annotations (<code>/api/labels</code>)</h2>
+<p>Creates, reads, aggregates, and deletes pixel labels. Areas are computed with PostGIS <code>ST_Area(ST_GeographyFromText(...))</code> in square meters and acres.</p>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+<tr><td class="post">POST</td><td>/api/labels/</td><td>Yes</td><td>Create a pixel label</td></tr>
+<tr><td class="get">GET</td><td>/api/labels/scene/{scene_id}</td><td>No</td><td>All labels of a scene</td></tr>
+<tr><td class="get">GET</td><td>/api/labels/stats/field/{field_id}</td><td>No</td><td>Per-class area statistics</td></tr>
+<tr><td class="delete">DELETE</td><td>/api/labels/{label_id}</td><td>Yes</td><td>Delete a label</td></tr>
+</table>
+
+<h3><span class="post">POST</span> /api/labels/</h3>
+<p><strong>Purpose:</strong> Save one labeled pixel. Validates scene + class existence and geometry validity, stores <code>SRID=4326</code> geometry, and computes area.</p>
+<h4>Sample Input</h4>
+<pre>{
+  "field_id": 25,
+  "scene_id": 42,
+  "class_id": 1,
+  "pixel_geom": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [72.000005, 31.000005],
+        [72.000095, 31.000005],
+        [72.000095, 31.000095],
+        [72.000005, 31.000095],
+        [72.000005, 31.000005]
+      ]
+    ]
+  },
+  "notes": "Annotated via web interface"
+}</pre>
+<h4>Sample Output (201)</h4>
+<pre>{
+  "label_id": 101,
+  "field_id": 25,
+  "scene_id": 42,
+  "class_id": 1,
+  "class_key": "crop",
+  "display_name": "Cultivated Crop",
+  "hex_color": "#e6c619",
+  "labeler_id": 1,
+  "labeler_name": "Admin User",
+  "pixel_geom": { "type": "Polygon", "coordinates": [ ... ] },
+  "area_sq_meters": 98.74,
+  "notes": "Annotated via web interface"
+}</pre>
+<h4>Errors</h4>
+<pre>404  { "detail": "Scene ID 42 not found." }
+404  { "detail": "LandCoverClass ID 1 not found." }
+400  { "detail": "Invalid spatial geometry provided." }
+400  { "detail": "GeoJSON parsing error: ..." }</pre>
+
+<h3><span class="get">GET</span> /api/labels/scene/{scene_id}</h3>
+<p><strong>Input:</strong> Path parameter, e.g. <code>/api/labels/scene/42</code></p>
+<h4>Sample Output (200)</h4>
+<pre>[
+  {
+    "label_id": 101,
+    "field_id": 25,
+    "scene_id": 42,
+    "class_id": 1,
+    "class_key": "crop",
+    "display_name": "Cultivated Crop",
+    "hex_color": "#e6c619",
+    "labeler_id": 1,
+    "labeler_name": "Admin User",
+    "pixel_geom": { "type": "Polygon", "coordinates": [ ... ] },
+    "area_sq_meters": 98.74,
+    "notes": "Annotated via web interface"
+  }
+]</pre>
+
+<h3><span class="get">GET</span> /api/labels/stats/field/{field_id}</h3>
+<p><strong>Input:</strong> Path parameter, e.g. <code>/api/labels/stats/field/25</code>. Groups labels by class; sums PostGIS geography area converted to acres (× 0.000247105).</p>
+<h4>Sample Output (200)</h4>
+<pre>[
+  {
+    "class_key": "crop",
+    "display_name": "Cultivated Crop",
+    "hex_color": "#e6c619",
+    "total_annotations": 25,
+    "total_area_acres": 2.475
+  },
+  {
+    "class_key": "trees_orchard",
+    "display_name": "Trees / Orchard",
+    "hex_color": "#1f7a3d",
+    "total_annotations": 10,
+    "total_area_acres": 0.988
+  }
+]</pre>
+
+<h3><span class="delete">DELETE</span> /api/labels/{label_id}</h3>
+<p><strong>Input:</strong> Path parameter, e.g. <code>/api/labels/101</code></p>
+<h4>Sample Output (200)</h4>
+<pre>{ "message": "Label deleted successfully", "label_id": 101 }</pre>
+<h4>Errors</h4>
+<pre>404  { "detail": "Label not found" }</pre>
+</div>
+
+<!-- ================= ROOT + APPENDIX ================= -->
+<div class="category">
+<h2>6. Root Health Endpoint</h2>
+<h3><span class="get">GET</span> /</h3>
+<p><strong>Input:</strong> None. (Not under <code>/api</code>.)</p>
+<h4>Sample Output (200)</h4>
+<pre>{ "message": "SAWIE Land Classifier API with PostGIS is active." }</pre>
+
+<h2>Appendix A — Full Endpoint &amp; Authentication Matrix</h2>
+<table>
+<tr><th>#</th><th>Method</th><th>Full Endpoint</th><th>Auth Required</th></tr>
+<tr><td>1</td><td class="post">POST</td><td>/api/auth/token</td><td>No</td></tr>
+<tr><td>2</td><td class="post">POST</td><td>/api/auth/register</td><td>Admin</td></tr>
+<tr><td>3</td><td class="get">GET</td><td>/api/classes/</td><td>No</td></tr>
+<tr><td>4</td><td class="post">POST</td><td>/api/classes/</td><td>Admin</td></tr>
+<tr><td>5</td><td class="put">PUT</td><td>/api/classes/{class_id}</td><td>Admin</td></tr>
+<tr><td>6</td><td class="delete">DELETE</td><td>/api/classes/{class_id}</td><td>Admin</td></tr>
+<tr><td>7</td><td class="post">POST</td><td>/api/classes/seed</td><td>Admin</td></tr>
+<tr><td>8</td><td class="post">POST</td><td>/api/fields/</td><td>Any logged-in labeler</td></tr>
+<tr><td>9</td><td class="get">GET</td><td>/api/fields/</td><td>No</td></tr>
+<tr><td>10</td><td class="get">GET</td><td>/api/fields/{field_id}</td><td>No</td></tr>
+<tr><td>11</td><td class="get">GET</td><td>/api/fields/geojson</td><td>No</td></tr>
+<tr><td>12</td><td class="post">POST</td><td>/api/imagery/</td><td>Any logged-in labeler</td></tr>
+<tr><td>13</td><td class="get">GET</td><td>/api/imagery/field/{field_id}</td><td>No</td></tr>
+<tr><td>14</td><td class="get">GET</td><td>/api/imagery/field/{field_id}/scene</td><td>No</td></tr>
+<tr><td>15</td><td class="get">GET</td><td>/api/imagery/field/{field_id}/pixel-grid</td><td>No</td></tr>
+<tr><td>16</td><td class="post">POST</td><td>/api/labels/</td><td>Any logged-in labeler</td></tr>
+<tr><td>17</td><td class="get">GET</td><td>/api/labels/scene/{scene_id}</td><td>No</td></tr>
+<tr><td>18</td><td class="get">GET</td><td>/api/labels/stats/field/{field_id}</td><td>No</td></tr>
+<tr><td>19</td><td class="delete">DELETE</td><td>/api/labels/{label_id}</td><td>Any logged-in labeler</td></tr>
+<tr><td>20</td><td class="get">GET</td><td>/</td><td>No</td></tr>
+</table>
+
+
+<h2>Appendix B — How the Frontend Uses These Endpoints</h2>
+<table>
+<tr><th>User Action</th><th>Endpoints Called (in order)</th></tr>
+<tr><td>Login</td><td>POST /api/auth/token</td></tr>
+<tr><td>Dashboard opens</td><td>GET /api/fields/ + GET /api/classes/</td></tr>
+<tr><td>Select field + click Load</td><td>GET /api/fields/{id} → GET /api/imagery/field/{id}/scene → GET /api/labels/scene/{scene_id} + GET /api/labels/stats/field/{id}</td></tr>
+<tr><td>Map renders grid</td><td>GET /api/imagery/field/{id}/pixel-grid</td></tr>
+<tr><td>Click a pixel</td><td>POST /api/labels/ → then refresh labels + stats</td></tr>
+<tr><td>Double-click a label</td><td>DELETE /api/labels/{id} → then refresh labels + stats</td></tr>
+<tr><td>Upload Field</td><td>POST /api/fields/ (+ optional POST /api/imagery/)</td></tr>
+<tr><td>Manage classes</td><td>GET/POST/PUT/DELETE /api/classes/..., POST /api/classes/seed</td></tr>
+<tr><td>Export Dataset</td><td>No endpoint — frontend downloads current labels state as JSON</td></tr>
+</table>
+
+</body>
+</html>

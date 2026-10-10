@@ -1,0 +1,17 @@
+{
+  "name": "9_state_up_lifting",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "daemon": "^1.1.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
